@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <h1>Import products from CSV</h1>
+  <p>Required columns: category_slug, name_uk, name_en, price, brand, frame_size, wheel_size, frame_material, brake_type, fork_type, gears, condition, availability.</p>
+  <p>Optional columns: slug, category_name_uk, category_name_en, description_uk, description_en, image_url, image_urls, image_alt.</p>
+
+  <form method="post" enctype="multipart/form-data" style="margin-top: 20px;">
+    {% csrf_token %}
+    <input type="file" name="csv_file" accept=".csv" required>
+    <button type="submit" class="button default">Upload and import</button>
+  </form>
+
+  <p style="margin-top: 20px;">
+    <a href="../">Back to products list</a>
+  </p>
+{% endblock %}

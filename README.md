@@ -150,6 +150,7 @@ Current migrations are included for:
 
 - CSV import:
   - `python manage.py import_products_csv path/to/products.csv`
+  - Admin UI: `Admin -> Catalog -> Products -> Import CSV`
 - API examples:
   - `GET /api/catalog/products/?price_min=1000&brand=Summit,Veloce&condition=new`
   - `GET /api/catalog/products/?search=gravel`
