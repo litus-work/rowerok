@@ -44,8 +44,15 @@ def _import_reader(reader: csv.DictReader) -> int:
         image_urls = []
         if row.get("image_urls"):
             image_urls = [url.strip() for url in row["image_urls"].split("|") if url.strip()]
-        elif row.get("image_url"):
+        if not image_urls:
+            image_urls = [row.get(f"image_url_{idx}", "").strip() for idx in range(1, 21)]
+            image_urls = [url for url in image_urls if url]
+        if not image_urls and row.get("image_url"):
             image_urls = [row["image_url"].strip()]
+
+        # Preserve order while removing duplicates.
+        if image_urls:
+            image_urls = list(dict.fromkeys(image_urls))
 
         if image_urls:
             ProductImage.objects.filter(product=product).delete()

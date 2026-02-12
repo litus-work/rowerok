@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "users",
     "catalog",
     "orders",
+    "telegram_ingest",
 ]
 
 MIDDLEWARE = [
@@ -121,6 +122,9 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@rowerok.local")
 MANAGER_EMAIL = os.getenv("MANAGER_EMAIL", "manager@rowerok.local")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+TELEGRAM_INGEST_ALLOWED_CHAT_IDS = os.getenv("TELEGRAM_INGEST_ALLOWED_CHAT_IDS", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 ENABLE_ORDER_NOTIFICATIONS = os.getenv("ENABLE_ORDER_NOTIFICATIONS", "false").lower() == "true"
