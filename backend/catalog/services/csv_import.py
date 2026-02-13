@@ -20,8 +20,9 @@ def _import_reader(reader: csv.DictReader) -> int:
             },
         )
 
+        slug_value = (row.get("slug") or slugify(row["name_en"]))[:50]
         product, _ = Product.objects.update_or_create(
-            slug=row.get("slug") or slugify(row["name_en"]),
+            slug=slug_value,
             defaults={
                 "name_uk": row["name_uk"],
                 "name_en": row["name_en"],

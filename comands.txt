@@ -1,0 +1,5 @@
+(.venv) PS C:\Users\litus\Desktop\rowerok\backend> python manage.py runserver 0.0.0.0:8000
+PS C:\Users\litus\Desktop\rowerok\frontend> npm run dev
+PS C:\Users\litus\Desktop\rowerok\backend> python  manage.py export_telegram_drafts_csv --output telegram_export.csv
+PS C:\Users\litus\Desktop\rowerok\backend> python  manage.py import_products_csv telegram_export.csv
+PS C:\Users\litus\Desktop\rowerok\backend>  python manage.py poll_telegram_products

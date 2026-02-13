@@ -151,6 +151,12 @@ Current migrations are included for:
 - CSV import:
   - `python manage.py import_products_csv path/to/products.csv`
   - Admin UI: `Admin -> Catalog -> Products -> Import CSV`
+- Telegram ingest (photo + caption -> drafts -> CSV):
+  - Set env: `TELEGRAM_BOT_TOKEN`, optional `TELEGRAM_INGEST_ALLOWED_CHAT_IDS`
+  - Optional LLM parse for free-form captions: `OPENAI_API_KEY`, `OPENAI_MODEL`
+  - Poll bot messages: `python manage.py poll_telegram_products --once`
+  - Export valid drafts to CSV: `python manage.py export_telegram_drafts_csv --output telegram_products_export.csv`
+  - Import exported CSV: `python manage.py import_products_csv telegram_products_export.csv`
 - API examples:
   - `GET /api/catalog/products/?price_min=1000&brand=Summit,Veloce&condition=new`
   - `GET /api/catalog/products/?search=gravel`

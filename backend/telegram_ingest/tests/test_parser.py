@@ -49,3 +49,15 @@ description_en: Description
         self.assertEqual(parsed["price"], "10000.00")
         self.assertEqual(parsed["condition"], "new")
         self.assertEqual(parsed["category_slug"], "e-bike")
+
+    def test_price_not_taken_from_phone(self):
+        caption = """Santa Cruz Nomad cc Карбон 27,5"
+
+Розмір рами: L
+2500€
+Більше фото і опис в коментарях
+0978642597
+"""
+        parsed, errors = parse_caption_to_product_data(caption)
+        self.assertEqual(errors, [])
+        self.assertEqual(parsed["price"], "2500.00")

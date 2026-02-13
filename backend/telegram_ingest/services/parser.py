@@ -73,7 +73,57 @@ def _normalize_availability(value: str) -> str:
     return "in_stock"
 
 
+def _digits_only(value: str) -> str:
+    return re.sub(r"\D", "", value)
+
+
+def _is_phone_like(value: str) -> bool:
+    digits = _digits_only(value)
+    if len(digits) < 10 or len(digits) > 13:
+        return False
+    if digits.startswith("0"):
+        return True
+    if digits.startswith("380"):
+        return True
+    return False
+
+
+def _extract_price_from_line(line: str) -> str:
+    lowered = line.lower()
+    currencies = [r"\u20ac", r"\$", "eur", "usd", "\u0433\u0440\u043d", "uah"]
+    curr_pattern = "|".join(currencies)
+
+    after_number = re.search(rf"(\d[\d\s.,]{{0,14}})\s*(?:{curr_pattern})", lowered)
+    if after_number:
+        value = after_number.group(1)
+        normalized = _normalize_price(value)
+        try:
+            if Decimal(normalized) > 0 and not _is_phone_like(value):
+                return normalized
+        except InvalidOperation:
+            return "0.00"
+
+    before_number = re.search(rf"(?:{curr_pattern})\s*(\d[\d\s.,]{{0,14}})", lowered)
+    if before_number:
+        value = before_number.group(1)
+        normalized = _normalize_price(value)
+        try:
+            if Decimal(normalized) > 0 and not _is_phone_like(value):
+                return normalized
+        except InvalidOperation:
+            return "0.00"
+
+    return "0.00"
+
+
 def _extract_price_from_text(lines: list[str], text_all: str) -> str:
+    # Priority 1: explicit currency marker.
+    for line in lines:
+        by_currency = _extract_price_from_line(line)
+        if by_currency != "0.00":
+            return by_currency
+
+    # Priority 2: explicit "price/ціна/цена/cost" line.
     marker_line = next(
         (line for line in lines if re.search(r"\b(ціна|цена|price|cost)\b", line.lower())),
         "",
@@ -81,16 +131,20 @@ def _extract_price_from_text(lines: list[str], text_all: str) -> str:
     if marker_line:
         marker_match = re.search(r"(\d[\d\s.,]{1,14})", marker_line)
         if marker_match:
-            normalized = _normalize_price(marker_match.group(1))
+            raw = marker_match.group(1)
+            normalized = _normalize_price(raw)
             try:
-                if Decimal(normalized) > 0:
+                if Decimal(normalized) > 0 and not _is_phone_like(raw):
                     return normalized
             except InvalidOperation:
                 pass
 
+    # Priority 3: largest non-phone candidate.
     best = Decimal("0")
     best_str = "0.00"
     for candidate in re.findall(r"\d[\d\s.,]{1,14}", text_all):
+        if _is_phone_like(candidate):
+            continue
         normalized = _normalize_price(candidate)
         try:
             value = Decimal(normalized)
