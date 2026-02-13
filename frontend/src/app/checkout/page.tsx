@@ -2,6 +2,7 @@
 
 import { useStore } from "@/components/providers/store-provider";
 import { createOrder } from "@/lib/api";
+import { formatMoney } from "@/lib/format";
 import { z } from "zod";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -97,7 +98,7 @@ export default function CheckoutPage() {
           <textarea className="w-full rounded border px-3 py-2" placeholder="Comment" value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} />
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
           <button disabled={sending} className="w-full rounded-xl bg-brand py-3 font-semibold text-white disabled:opacity-50">
-            {sending ? "Sending..." : `Confirm Order ($${total.toLocaleString()})`}
+            {sending ? "Sending..." : `Confirm Order ($${formatMoney(total)})`}
           </button>
         </form>
         <div className="h-fit rounded-2xl bg-gray-50 p-6">
@@ -106,11 +107,11 @@ export default function CheckoutPage() {
             {cart.map((item) => (
               <div key={item.product.id} className="flex justify-between">
                 <span>{item.product.name_uk} x{item.quantity}</span>
-                <span>${(Number(item.product.price) * item.quantity).toLocaleString()}</span>
+                <span>${formatMoney(Number(item.product.price) * item.quantity)}</span>
               </div>
             ))}
           </div>
-          <div className="mt-4 border-t pt-4 font-bold">Total: ${total.toLocaleString()}</div>
+          <div className="mt-4 border-t pt-4 font-bold">Total: ${formatMoney(total)}</div>
         </div>
       </div>
     </div>

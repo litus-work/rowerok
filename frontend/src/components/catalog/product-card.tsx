@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/components/providers/store-provider";
+import { formatMoney } from "@/lib/format";
 import { Product } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,7 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
           {t(product, locale)}
         </Link>
         <div className="flex items-center justify-between">
-          <div className="text-xl font-bold">${Number(product.price).toLocaleString()}</div>
+          <div className="text-xl font-bold">${formatMoney(product.price)}</div>
           <button onClick={() => addToCart(product)} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white hover:bg-brand">
             Add
           </button>

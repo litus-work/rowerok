@@ -2,6 +2,7 @@
 
 import { useStore } from "@/components/providers/store-provider";
 import { getMyOrder } from "@/lib/api";
+import { formatMoney } from "@/lib/format";
 import { Order } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -83,16 +84,16 @@ export default function OrderDetailsPage() {
                   {item.product_name_uk}
                 </Link>
               </div>
-              <div className="font-semibold">${(Number(item.price) * item.quantity).toLocaleString()}</div>
+              <div className="font-semibold">${formatMoney(Number(item.price) * item.quantity)}</div>
             </div>
             <div className="mt-2 text-sm text-gray-600">
-              Qty: {item.quantity} x ${Number(item.price).toLocaleString()}
+              Qty: {item.quantity} x ${formatMoney(item.price)}
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 rounded-xl bg-gray-50 p-4 text-lg font-bold">Total: ${Number(order.total_price).toLocaleString()}</div>
+      <div className="mt-6 rounded-xl bg-gray-50 p-4 text-lg font-bold">Total: ${formatMoney(order.total_price)}</div>
 
       {order.comment ? <div className="mt-4 rounded-xl border p-4 text-sm text-gray-700">Comment: {order.comment}</div> : null}
 

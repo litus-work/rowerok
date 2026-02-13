@@ -24,6 +24,7 @@ export default function HeroBanner() {
           alt={`Rower Ok Banner ${i + 1}`}
           fill
           priority={i === 0}
+          unoptimized
           className={`object-cover transition-opacity duration-700 ${i === index ? "opacity-100" : "opacity-0"}`}
         />
       ))}

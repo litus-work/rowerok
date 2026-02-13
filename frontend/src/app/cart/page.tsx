@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/components/providers/store-provider";
+import { formatMoney } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -49,7 +50,7 @@ export default function CartPage() {
                       remove
                     </button>
                   </div>
-                  <div className="font-bold">${(Number(item.product.price) * item.quantity).toLocaleString()}</div>
+                  <div className="font-bold">${formatMoney(Number(item.product.price) * item.quantity)}</div>
                 </div>
               </div>
             </div>
@@ -60,7 +61,7 @@ export default function CartPage() {
           <div className="space-y-2 text-sm text-gray-700">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span>${subtotal.toLocaleString()}</span>
+              <span>${formatMoney(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping</span>
@@ -69,7 +70,7 @@ export default function CartPage() {
           </div>
           <div className="mt-4 flex justify-between border-t pt-4 text-lg font-bold">
             <span>Total</span>
-            <span>${total.toLocaleString()}</span>
+            <span>${formatMoney(total)}</span>
           </div>
           <Link href="/checkout" className="mt-6 block rounded-xl bg-brand py-3 text-center font-semibold text-white">
             Proceed to Checkout

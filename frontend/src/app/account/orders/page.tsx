@@ -2,6 +2,7 @@
 
 import { useStore } from "@/components/providers/store-provider";
 import { getMyOrders } from "@/lib/api";
+import { formatMoney } from "@/lib/format";
 import { Order } from "@/lib/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -37,7 +38,7 @@ export default function AccountOrdersPage() {
               <div className="text-sm uppercase text-gray-500">{order.status}</div>
             </div>
             <div className="mt-2 text-sm text-gray-600">{new Date(order.created_at).toLocaleString()}</div>
-            <div className="mt-2 font-bold">${Number(order.total_price).toLocaleString()}</div>
+            <div className="mt-2 font-bold">${formatMoney(order.total_price)}</div>
           </Link>
         ))}
         {!orders.length ? <div className="text-gray-500">No orders yet.</div> : null}

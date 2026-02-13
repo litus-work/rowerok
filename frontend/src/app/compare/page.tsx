@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/components/providers/store-provider";
+import { formatMoney } from "@/lib/format";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -44,7 +45,7 @@ export default function ComparePage() {
               Add to cart
             </button>
             <div className="text-sm">
-              <div className="h-10 border-b">${Number(product.price).toLocaleString()}</div>
+              <div className="h-10 border-b">${formatMoney(product.price)}</div>
               <div className="h-10 border-b">{product.frame_size}</div>
               <div className="h-10 border-b">{product.wheel_size}</div>
               <div className="h-10 border-b">{product.frame_material}</div>
