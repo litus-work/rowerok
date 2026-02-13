@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import path
+from django.utils.html import format_html
 
 from catalog.models import Category, Product, ProductImage
 from catalog.services.csv_import import import_products_from_upload
@@ -9,7 +10,21 @@ from catalog.services.csv_import import import_products_from_upload
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1
+    extra = 0
+    can_delete = True
+    show_change_link = True
+    fields = ("preview", "image", "alt_text", "is_main")
+    readonly_fields = ("preview",)
+
+    @admin.display(description="Preview")
+    def preview(self, obj):
+        if not obj or not obj.image:
+            return "No image"
+        return format_html(
+            '<img src="{}" alt="{}" style="max-height: 80px; border-radius: 6px;" />',
+            obj.image,
+            obj.alt_text or "Product image",
+        )
 
 
 @admin.register(Category)
@@ -29,6 +44,26 @@ class ProductAdmin(admin.ModelAdmin):
     list_select_related = ("category",)
     inlines = [ProductImageInline]
     change_list_template = "admin/catalog/product/change_list.html"
+    readonly_fields = ("created_at",)
+    fields = (
+        "name_uk",
+        "name_en",
+        "slug",
+        "category",
+        "price",
+        "brand",
+        "frame_size",
+        "wheel_size",
+        "frame_material",
+        "brake_type",
+        "fork_type",
+        "gears",
+        "condition",
+        "availability",
+        "description_uk",
+        "description_en",
+        "created_at",
+    )
 
     def get_urls(self):
         urls = super().get_urls()
@@ -62,8 +97,43 @@ class ProductAdmin(admin.ModelAdmin):
         }
         return render(request, "admin/catalog/product/import_csv.html", context)
 
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for instance in instances:
+            instance.save()
+        formset.save_m2m()
+
+        if formset.model is ProductImage:
+            images = ProductImage.objects.filter(product=form.instance).order_by("id")
+            if not images.exists():
+                return
+
+            main_images = images.filter(is_main=True)
+            if main_images.count() == 0:
+                first = images.first()
+                first.is_main = True
+                first.save(update_fields=["is_main"])
+            elif main_images.count() > 1:
+                keeper = main_images.first()
+                images.exclude(pk=keeper.pk).filter(is_main=True).update(is_main=False)
+
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ("id", "product", "is_main")
+    list_display = ("id", "preview", "product", "is_main")
     list_filter = ("is_main",)
+    search_fields = ("product__name_uk", "product__name_en", "product__slug", "alt_text", "image")
+    readonly_fields = ("preview",)
+    fields = ("product", "preview", "image", "alt_text", "is_main")
+
+    @admin.display(description="Preview")
+    def preview(self, obj):
+        if not obj or not obj.image:
+            return "No image"
+        return format_html(
+            '<img src="{}" alt="{}" style="max-height: 140px; border-radius: 8px;" />',
+            obj.image,
+            obj.alt_text or "Product image",
+        )
